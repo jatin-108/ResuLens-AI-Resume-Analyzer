@@ -10,7 +10,7 @@ import Dashboard from "../pages/Dashboard";
 import Uploadresume from "../pages/Uploadresume";
 import Analysis from "../pages/Analysis";
 import Profile from "../pages/Profile";
-import Notfound from "../pages/NotFound";
+import Notfound from "../pages/Notfound";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import History from "../pages/History";
 import HistoryReport from "../pages/HistoryReport";
