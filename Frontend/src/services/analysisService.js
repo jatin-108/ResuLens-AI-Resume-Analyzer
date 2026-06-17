@@ -9,3 +9,8 @@ export const getHistory = async () => {
 
   return response.data;
 };
+export const getLatestAnalysis = async () => {
+  const response = await API.get("/analysis/latest");
+
+  return response.data;
+};

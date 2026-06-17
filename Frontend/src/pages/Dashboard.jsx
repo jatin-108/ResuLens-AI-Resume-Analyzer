@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { getHistory } from "../services/analysisService";
 import {
   FiUpload,
   FiClock,
@@ -12,6 +14,43 @@ import useAuth from "../hooks/useAuth";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const data = await getHistory();
+
+        setHistory(data.analyses);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
+
+  const highestScore =
+    history.length > 0 ? Math.max(...history.map((item) => item.atsScore)) : 0;
+
+  const averageScore =
+    history.length > 0
+      ? Math.round(
+          history.reduce((sum, item) => sum + item.atsScore, 0) /
+            history.length,
+        )
+      : 0;
+
+  if (loading) {
+    return (
+      <div className="text-center mt-24 text-gray-500 dark:text-gray-400">
+        Loading dashboard...
+      </div>
+    );
+  }
 
   return (
     <section className="space-y-12">
@@ -49,7 +88,7 @@ const Dashboard = () => {
             Total Uploads
           </h3>
 
-          <h2 className="mt-3 text-4xl font-bold">12</h2>
+          <h2 className="mt-3 text-4xl font-bold">{history.length}</h2>
         </motion.div>
 
         {/* Average ATS */}
@@ -72,7 +111,7 @@ const Dashboard = () => {
             Average ATS
           </h3>
 
-          <h2 className="mt-3 text-4xl font-bold">84%</h2>
+          <h2 className="mt-3 text-4xl font-bold">{averageScore}%</h2>
         </motion.div>
 
         {/* Best Score */}
@@ -95,7 +134,7 @@ const Dashboard = () => {
             Best Score
           </h3>
 
-          <h2 className="mt-3 text-4xl font-bold">91%</h2>
+          <h2 className="mt-3 text-4xl font-bold">{highestScore}%</h2>
         </motion.div>
       </div>
 
@@ -117,35 +156,16 @@ const Dashboard = () => {
           <h2 className="text-2xl font-bold">Recent Analyses</h2>
 
           <div className="mt-8 space-y-6">
-            {[
-              {
-                name: "Resume.pdf",
-                date: "Uploaded 2 days ago",
-                score: "86%",
-                color: "green",
-              },
-              {
-                name: "React Resume.pdf",
-                date: "Uploaded yesterday",
-                score: "91%",
-                color: "indigo",
-              },
-              {
-                name: "Node Resume.pdf",
-                date: "Uploaded today",
-                score: "82%",
-                color: "yellow",
-              },
-            ].map((item, index) => (
+            {history.slice(0, 3).map((item, index) => (
               <div
-                key={index}
+                key={index._id}
                 className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
               >
                 <div>
-                  <h3 className="font-semibold">{item.name}</h3>
+                  <h3 className="font-semibold">{item.resumeName}</h3>
 
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {item.date}
+                    {new Date(item.createdAt).toLocaleDateString()}
                   </p>
                 </div>
 
@@ -161,7 +181,7 @@ const Dashboard = () => {
                     }
                   `}
                 >
-                  {item.score}
+                  {item.atsScore}%
                 </span>
               </div>
             ))}

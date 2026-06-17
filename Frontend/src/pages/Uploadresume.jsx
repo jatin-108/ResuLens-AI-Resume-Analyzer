@@ -4,14 +4,12 @@ import { FiUploadCloud, FiFileText, FiTrash2 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { uploadResume } from "../services/resumeService";
 import { useNavigate } from "react-router-dom";
-import useAnalysis from "../hooks/useAnalysis";
 
 const Uploadresume = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { setAnalysis } = useAnalysis();
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -36,9 +34,7 @@ const Uploadresume = () => {
 
       setLoading(true);
 
-      const data = await uploadResume(file);
-
-      setAnalysis(data.analysis);
+      await uploadResume(file);
 
       toast.success("Analysis completed successfully");
 

@@ -59,6 +59,8 @@ const Login = () => {
     try {
       const data = await loginUser(formData);
 
+      // Clear previous user's analysis
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 

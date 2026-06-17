@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-
-import useAnalysis from "../hooks/useAnalysis";
+import { useEffect, useState } from "react";
+import { getLatestAnalysis } from "../services/analysisService";
 
 import {
   FiCheckCircle,
@@ -12,7 +12,30 @@ import {
 } from "react-icons/fi";
 
 const Analysis = () => {
-  const { analysis } = useAnalysis();
+  const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLatestAnalysis = async () => {
+      try {
+        const data = await getLatestAnalysis();
+
+        setAnalysis(data.analysis);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLatestAnalysis();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center mt-24 text-gray-500">Loading analysis...</div>
+    );
+  }
 
   if (!analysis) {
     return (
