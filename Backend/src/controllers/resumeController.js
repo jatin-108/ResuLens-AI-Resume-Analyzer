@@ -1,5 +1,3 @@
-import fs from "fs/promises";
-
 import { extractTextFromPDF } from "../services/pdfService.js";
 import { analyzeResumeWithGroq } from "../services/groqService.js";
 import Analysis from "../models/Analysis.js";
@@ -13,8 +11,8 @@ export const uploadResume = async (req, res) => {
       });
     }
 
-    // Extract text from PDF
-    const extractedText = await extractTextFromPDF(req.file.path);
+    // Extract text from PDF buffer
+    const extractedText = await extractTextFromPDF(req.file.buffer);
 
     // Analyze resume using Groq
     const analysis = await analyzeResumeWithGroq(extractedText);
@@ -40,16 +38,5 @@ export const uploadResume = async (req, res) => {
       success: false,
       message: error.message || "Failed to analyze resume",
     });
-  } finally {
-    // Delete uploaded file whether success or failure
-    if (req.file) {
-      try {
-        await fs.unlink(req.file.path);
-
-        console.log(`Deleted file: ${req.file.path}`);
-      } catch (err) {
-        console.error("FILE DELETE ERROR:", err);
-      }
-    }
   }
 };
